@@ -71,10 +71,15 @@ private:
     T   t;
 };
 
-STARE_REFLECT(template(class T), type(simple_type<T>), fields(i, t));
+STARE_REFLECT(template(class T), type(simple_type<T>), fields(i, t)
+              /*, verify(true)*/);
 
 TEST_CASE("basic_reflect")
 {
+    // check whether detecting reflections works
+    static_assert(stare::reflected<ns::my_type<int>>);
+    // check that int isn't reflected
+    static_assert(!stare::reflected<int>);
     using my_reflect = stare::reflection<ns::my_type<int>>;
 
     constexpr auto simple_reflect = stare::reflection<simple_type<int>>{};
