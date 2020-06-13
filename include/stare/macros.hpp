@@ -22,10 +22,11 @@
 #define STARE_PP_EX_(Specifier, ...) STARE_PP_EX_##Specifier __VA_ARGS__
 
 #define STARE_PP_TEMPLATE(...) template<__VA_ARGS__>
-#define STARE_PP_TYPE(x)                                                       \
-    struct stare::reflection<x> : ::stare::detail::reflection_interface<x>     \
+#define STARE_PP_TYPE(...)                                                     \
+    struct stare::reflection<__VA_ARGS__>                                      \
+        : ::stare::detail::reflection_interface<__VA_ARGS__>                   \
     {                                                                          \
-        using value_type = x;
+        using value_type = __VA_ARGS__;
 
 #define STARE_PP_INHERITS(...)                                                 \
     constexpr auto bases() const noexcept                                      \
@@ -36,7 +37,7 @@
 #define STARE_PP_END() }
 
 #define STARE_PP_EX_template(...) STARE_PP_TEMPLATE(__VA_ARGS__)
-#define STARE_PP_EX_type(x) STARE_PP_TYPE(x)
+#define STARE_PP_EX_type(...) STARE_PP_TYPE(__VA_ARGS__)
 #define STARE_PP_EX_inherits(...) STARE_PP_INHERITS(__VA_ARGS__)
 #define STARE_PP_EX_fields(...)                                                \
     constexpr auto fields() const noexcept                                     \
