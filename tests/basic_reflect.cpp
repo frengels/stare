@@ -69,6 +69,10 @@ class simple_type
 private:
     int i;
     T   t;
+
+public:
+    constexpr simple_type(int i, T t) : i(i), t(std::move(t))
+    {}
 };
 
 STARE_REFLECT(template(class T), type(simple_type<T>), fields(i, t)
@@ -89,5 +93,10 @@ TEST_CASE("basic_reflect")
 
     constexpr auto field_t = std::get<1>(simple_reflect.fields());
     static_assert(field_t.name == "t");
-    static_assert(*field_t.offset == 4);
+    static_assert(field_t.offset == 4);
+
+    constexpr auto val = simple_type<int>(5, 50);
+    // can extract despite the class being private
+    CHECK(field_t.extract_from(val) == 50);
+    CHECK(field_i.extract_from(val) == 5);
 }

@@ -16,11 +16,8 @@
 #define STARE_PP_DEFER(Id) Id STARE_PP_EMPTY()
 
 #define STARE_PP_FIELD(fieldname)                                              \
-    ::stare::field<decltype(value_type::fieldname)>(                           \
-        #fieldname,                                                            \
-        std::is_standard_layout<value_type>::value ?                           \
-            std::optional<std::size_t>(offsetof(value_type, fieldname)) :      \
-            std::optional<std::size_t>())
+    ::stare::field<value_type, decltype(value_type::fieldname)>(               \
+        #fieldname, offsetof(value_type, fieldname))
 
 #define STARE_PP_EX_(Specifier, ...) STARE_PP_EX_##Specifier __VA_ARGS__
 
