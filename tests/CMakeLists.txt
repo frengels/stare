@@ -1,5 +1,6 @@
 set(TESTS
-    basic_reflect)
+    basic_reflect
+    template_args)
 
 find_package(doctest REQUIRED)
 
