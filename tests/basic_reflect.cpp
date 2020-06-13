@@ -61,10 +61,10 @@ struct stare::reflection<ns::my_type<T>>
 };
 */
 
-template<class T>
+template<class T, typename U>
 class simple_type
 {
-    friend struct stare::reflection<simple_type<T>>;
+    friend struct stare::reflection<simple_type<T, U>>;
 
 private:
     int i;
@@ -75,7 +75,7 @@ public:
     {}
 };
 
-STARE_REFLECT(template(class T), type(simple_type<T>), fields(i, t)
+STARE_REFLECT(template(class T, class U), type(simple_type<T, U>), fields(i, t)
               /*, verify(true)*/);
 
 TEST_CASE("basic_reflect")
@@ -86,8 +86,9 @@ TEST_CASE("basic_reflect")
     static_assert(!stare::reflected<int>);
     using my_reflect = stare::reflection<ns::my_type<int>>;
 
-    constexpr auto simple_reflect = stare::reflection<simple_type<int>>{};
-    constexpr auto field_i        = std::get<0>(simple_reflect.fields());
+    constexpr auto simple_reflect =
+        stare::reflection<simple_type<int, float>>{};
+    constexpr auto field_i = std::get<0>(simple_reflect.fields());
     static_assert(field_i.name == "i");
     static_assert(field_i.offset == 0);
 
@@ -95,7 +96,7 @@ TEST_CASE("basic_reflect")
     static_assert(field_t.name == "t");
     static_assert(field_t.offset == 4);
 
-    constexpr auto val = simple_type<int>(5, 50);
+    constexpr auto val = simple_type<int, float>(5, 50);
     // can extract despite the class being private
     CHECK(field_t.extract_from(val) == 50);
     CHECK(field_i.extract_from(val) == 5);
