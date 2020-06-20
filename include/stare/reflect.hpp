@@ -2,12 +2,17 @@
 
 #include <type_traits>
 
+#include "stare/reflection.hpp"
+
 namespace stare
 {
 template<typename T>
 concept adl_reflectable = requires
 {
-    reflect(std::in_place_type<T>);
+    {
+        reflect(std::in_place_type<T>)
+    }
+    ->stare::declarative_reflection;
 };
 
 template<typename T>

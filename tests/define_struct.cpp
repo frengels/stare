@@ -17,9 +17,12 @@ template<typename T>
 consteval auto reflect(std::in_place_type_t<vec3<T>>) noexcept
 {
     return stare::make_reflection_for<vec3<T>>()
-        .template field<T>("x", offsetof(vec3<T>, x), alignof(T), true)
-        .template field<T>("y", offsetof(vec3<T>, y), alignof(T), true)
-        .template field<T>("z", offsetof(vec3<T>, z), alignof(T), true)
+        .field(
+            std::in_place_type<T>, "x", offsetof(vec3<T>, x), alignof(T), true)
+        .field(
+            std::in_place_type<T>, "y", offsetof(vec3<T>, y), alignof(T), true)
+        .field(
+            std::in_place_type<T>, "z", offsetof(vec3<T>, z), alignof(T), true)
         .build();
 }
 
@@ -32,15 +35,42 @@ struct vec2
     friend consteval auto reflect(std::in_place_type_t<vec2<T>>) noexcept
     {
         return stare::make_reflection_for<vec2<T>>()
-            .template field<T>("x", offsetof(vec2<T>, x), alignof(T), true)
-            .template field<T>("y", offsetof(vec2<T>, y), alignof(T), true)
+            .field(std::in_place_type<T>,
+                   "x",
+                   offsetof(vec2<T>, x),
+                   alignof(T),
+                   true)
+            .field(std::in_place_type<T>,
+                   "y",
+                   offsetof(vec2<T>, y),
+                   alignof(T),
+                   true)
+            .build();
+    }
+};
+
+struct color : vec3<uint8_t>
+{
+    friend consteval auto reflect(std::in_place_type_t<color>) noexcept
+    {
+        return stare::make_reflection_for<color>()
+            .template base<vec3<uint8_t>>()
             .build();
     }
 };
 
 TEST_CASE("struct")
 {
-    constexpr auto refl = stare::reflect<vec3<float>>();
-    static_assert(std::get<0>(refl.fields()).offset == 0);
-    static_assert(std::get<1>(refl.fields()).offset == 4);
+    SUBCASE("vec3")
+    {
+        using std::get;
+        constexpr auto refl = stare::reflect<vec3<float>>();
+        static_assert(get<0>(refl.fields()).offset() == 0);
+        static_assert(get<1>(refl.fields()).offset() == 4);
+    }
+
+    SUBCASE("vec4")
+    {
+        constexpr auto color_refl = stare::reflect<color>();
+    }
 }
