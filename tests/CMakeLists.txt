@@ -1,6 +1,7 @@
 set(TESTS
-    basic_reflect
-    template_args)
+    #basic_reflect
+    #template_args
+    define_struct)
 
 find_package(doctest REQUIRED)
 
