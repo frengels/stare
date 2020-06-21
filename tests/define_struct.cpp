@@ -67,10 +67,14 @@ TEST_CASE("struct")
         constexpr auto refl = stare::reflect<vec3<float>>();
         static_assert(get<0>(refl.fields()).offset() == 0);
         static_assert(get<1>(refl.fields()).offset() == 4);
+
+        static_assert(refl.name() == "vec3<float>");
     }
 
     SUBCASE("vec4")
     {
         constexpr auto color_refl = stare::reflect<color>();
+
+        static_assert(color_refl.name() == "color");
     }
 }
