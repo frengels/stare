@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <optional>
 #include <string_view>
 
 namespace stare
@@ -46,6 +47,24 @@ constexpr auto nameof_enum_entry_impl() noexcept
                   "stare::nameof_enum_entry: Unsupported compiler");
 #endif
     return name;
+}
+
+constexpr bool is_digit(char c) noexcept
+{
+    return ('0' <= c) && (c <= '9');
+}
+
+constexpr bool is_enum_entry(std::string_view enum_str) noexcept
+{
+#if defined(__clang__)
+    return !is_digit(enum_str[0]);
+#elif defined(__GNUC__)
+    return !enum_str.starts_with('(');
+#else
+    static_assert(!std::is_same_v<int, int>,
+                  "stare::is_enum_entry: Unsupported compiler");
+    return false;
+#endif
 }
 
 template<class T>
@@ -100,5 +119,20 @@ constexpr auto nameof_enum_entry() noexcept
 {
     auto& cleaned_name = detail::nameof_enum_entry_helper<E>::cleaned_name;
     return std::string_view{cleaned_name.data(), cleaned_name.size() - 1};
+}
+
+template<stare::enumeral E, std::underlying_type_t<E> I>
+constexpr std::optional<std::string_view> try_nameof_enum_entry() noexcept
+{
+    // take the intermediate name to save on template instantiations
+    constexpr auto name = detail::nameof_enum_entry_impl<static_cast<E>(I)>();
+    if (stare::detail::is_enum_entry(name))
+    {
+        return std::optional{name};
+    }
+    else
+    {
+        return std::nullopt;
+    }
 }
 } // namespace stare
