@@ -1,7 +1,8 @@
 set(TESTS
     #basic_reflect
     #template_args
-    define_struct)
+    define_struct
+    enumeration)
 
 find_package(doctest REQUIRED)
 

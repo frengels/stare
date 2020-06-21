@@ -46,6 +46,8 @@ public:
 template<class T>
 constexpr auto nameof_type() noexcept
 {
-    return detail::nameof_helper<T>::cleaned_name;
+    auto& cleaned_name = detail::nameof_helper<T>::cleaned_name;
+    // remove one for trailing \0
+    return std::string_view{cleaned_name.data(), cleaned_name.size() - 1};
 }
 } // namespace stare
