@@ -19,20 +19,33 @@ constexpr auto nameof_type_impl() noexcept
 #elif defined(__GNUC__)
     constexpr auto name = std::string_view{__PRETTY_FUNCTION__ + 59,
                                            sizeof(__PRETTY_FUNCTION__) - 61};
-#elif defined(_MSC_VER)
-#error "nameof_type not yet implemented for msvc"
+    // TODO _MSC_VER
+#else
+    // make sure this only gets instantiated when the function is used
+    constexpr auto name = std::string_view{};
+    static_assert(!std::is_same_v<int, int>,
+                  "stare::nameof_type: Unsupported compiler");
 #endif
 
     return name;
 }
 
-template<stare::enumeral E, E val>
+template<auto val>
 constexpr auto nameof_enum_entry_impl() noexcept
+    requires(enumeral<decltype(val)>)
 {
 #if defined(__clang__)
-    constexpr auto name =
-        std::string_view{__PRETTY_FUNCTION__, sizeof(__PRETTY_FUNCTION__)};
+    constexpr auto name = std::string_view{__PRETTY_FUNCTION__ + 52,
+                                           sizeof(__PRETTY_FUNCTION__) - 54};
+#elif defined(__GNUC__)
+    constexpr auto name = std::string_view{__PRETTY_FUNCTION__ + 106,
+                                           sizeof(__PRETTY_FUNCTION__) - 108};
+#else
+    constexpr auto name = std::string_view{};
+    static_assert(!std::is_same_v<int, int>,
+                  "stare::nameof_enum_entry: Unsupported compiler");
 #endif
+    return name;
 }
 
 template<class T>
@@ -52,6 +65,24 @@ public:
     static constexpr auto cleaned_name =
         clean_name(std::make_index_sequence<dirty_name.size()>{}, dirty_name);
 };
+
+template<auto E>
+requires stare::enumeral<decltype(E)> struct nameof_enum_entry_helper
+{
+private:
+    template<std::size_t... Is>
+    static constexpr auto clean_name(std::index_sequence<Is...>,
+                                     std::string_view dirty_name) noexcept
+    {
+        return std::array<char, sizeof...(Is) + 1>{dirty_name[Is]..., '\0'};
+    }
+
+public:
+    static constexpr auto dirty_name = nameof_enum_entry_impl<E>();
+
+    static constexpr auto cleaned_name =
+        clean_name(std::make_index_sequence<dirty_name.size()>{}, dirty_name);
+};
 } // namespace detail
 
 // prefer auto return type in case return type changes
@@ -60,6 +91,14 @@ constexpr auto nameof_type() noexcept
 {
     auto& cleaned_name = detail::nameof_helper<T>::cleaned_name;
     // remove one for trailing \0
+    return std::string_view{cleaned_name.data(), cleaned_name.size() - 1};
+}
+
+template<auto E>
+constexpr auto nameof_enum_entry() noexcept
+    requires(stare::enumeral<decltype(E)>)
+{
+    auto& cleaned_name = detail::nameof_enum_entry_helper<E>::cleaned_name;
     return std::string_view{cleaned_name.data(), cleaned_name.size() - 1};
 }
 } // namespace stare

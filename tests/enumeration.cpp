@@ -22,4 +22,9 @@ TEST_CASE("enum")
 {
     static_assert(stare::nameof_type<no_namespace>() == "no_namespace");
     static_assert(stare::nameof_type<myns::namespaced>() == "myns::namespaced");
+
+    static_assert(stare::nameof_enum_entry<no_namespace::entry1>() ==
+                  "no_namespace::entry1");
+    static_assert(stare::nameof_enum_entry<myns::namespaced::entry1>() ==
+                  "myns::namespaced::entry1");
 }
