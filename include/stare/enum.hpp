@@ -6,9 +6,6 @@
 
 namespace stare
 {
-template<typename E>
-concept enumeral = std::is_enum_v<E>;
-
 template<enumeral E>
 class enum_reflection
 {

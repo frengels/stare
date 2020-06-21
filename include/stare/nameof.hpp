@@ -5,6 +5,9 @@
 
 namespace stare
 {
+template<typename E>
+concept enumeral = std::is_enum_v<E>;
+
 namespace detail
 {
 template<typename T>
@@ -21,6 +24,15 @@ constexpr auto nameof_type_impl() noexcept
 #endif
 
     return name;
+}
+
+template<stare::enumeral E, E val>
+constexpr auto nameof_enum_entry_impl() noexcept
+{
+#if defined(__clang__)
+    constexpr auto name =
+        std::string_view{__PRETTY_FUNCTION__, sizeof(__PRETTY_FUNCTION__)};
+#endif
 }
 
 template<class T>
