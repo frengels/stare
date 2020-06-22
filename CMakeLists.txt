@@ -25,9 +25,10 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>)
 target_compile_features(stare INTERFACE cxx_std_20)
 
+# gcc9 requires -fconcepts to enable concepts
 target_compile_options(stare INTERFACE 
     $<$<CXX_COMPILER_ID:GNU>:
-        $<$<VERSION_LESS:CXX_COMPILER_VERSION,9.1.0>:
+        $<$<VERSION_LESS:$<CXX_COMPILER_VERSION>,10.0.0>:
             -fconcepts>>)
 
 write_basic_package_version_file(
