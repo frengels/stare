@@ -126,7 +126,6 @@ public:
         : bases_(std::move(bases)), fields_(std::move(fields))
     {}
 
-public:
     reflection_builder() = default;
 
     template<typename U, typename... Args>
