@@ -2,6 +2,7 @@
 
 #include <type_traits>
 
+#include "stare/config.hpp"
 #include "stare/reflection.hpp"
 
 namespace stare
@@ -33,14 +34,14 @@ struct fn
 {
 private:
     // try the adl version first
-    static consteval auto impl(priority_tag<2>) noexcept
+    static STARE_CONSTEVAL auto impl(priority_tag<2>) noexcept
         -> decltype(reflect(std::in_place_type<T>))
     {
         return reflect(std::in_place_type<T>);
     }
 
 public:
-    consteval auto operator()() const noexcept
+    STARE_CONSTEVAL auto operator()() const noexcept
         -> decltype(impl(priority_tag<2>{}))
     {
         return impl(priority_tag<2>{});

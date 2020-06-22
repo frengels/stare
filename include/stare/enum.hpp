@@ -2,6 +2,7 @@
 
 #include <type_traits>
 
+#include "stare/config.hpp"
 #include "stare/nameof.hpp"
 
 namespace stare
@@ -17,6 +18,6 @@ class enum_reflection
 };
 
 template<enumeral E>
-consteval auto reflect_enum() noexcept
+STARE_CONSTEVAL auto reflect_enum() noexcept
 {}
 } // namespace stare

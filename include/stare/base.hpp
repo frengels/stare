@@ -1,13 +1,14 @@
 #pragma once
 
-#include <concepts>
 #include <tuple>
 #include <type_traits>
+
+#include "stare/concepts.hpp"
 
 namespace stare
 {
 template<typename Derived, typename Base>
-requires std::derived_from<Derived, Base> struct base
+requires stare::detail::derived_from<Derived, Base> struct base
 {
     using type       = Base;
     using class_type = Derived;

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cassert>
-#include <concepts>
 #include <cstring>
-#include <span>
 #include <string_view>
 #include <type_traits>
+
+#include "stare/concepts.hpp"
 
 namespace stare
 {
@@ -93,7 +93,7 @@ public:
 };
 
 template<typename T>
-concept field = std::derived_from<T, field_base>&& requires
+concept field = stare::detail::derived_from<T, field_base>&& requires
 {
     typename T::class_type;
     typename T::type;
@@ -102,7 +102,8 @@ concept field = std::derived_from<T, field_base>&& requires
 template<typename Class, field... FieldTs>
 class fields_of
 {
-    static_assert((std::same_as<Class, typename FieldTs::class_type> && ...));
+    static_assert(
+        (stare::detail::same_as<Class, typename FieldTs::class_type> && ...));
 
 public:
     using class_type = Class;
@@ -113,9 +114,16 @@ private:
 public:
     template<typename... FieldUs>
     constexpr fields_of(FieldUs&&... fields) noexcept
-        requires((std::constructible_from<FieldTs, FieldUs&&> && ...))
+#ifndef STARE_GCC9 // workaround for gcc9
+        requires((stare::detail::constructible_from<FieldTs, FieldUs&&> && ...))
+#endif
         : fields_(static_cast<FieldUs&&>(fields)...)
-    {}
+    {
+#ifdef STARE_GCC9
+        static_assert(
+            (stare::detail::constructible_from<FieldTs, FieldUs&&> && ...));
+#endif
+    }
 
     template<std::size_t I>
     friend constexpr auto

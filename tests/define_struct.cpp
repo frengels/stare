@@ -14,7 +14,7 @@ struct vec3
 };
 
 template<typename T>
-consteval auto reflect(std::in_place_type_t<vec3<T>>) noexcept
+STARE_CONSTEVAL auto reflect(std::in_place_type_t<vec3<T>>) noexcept
 {
     return stare::make_reflection_for<vec3<T>>()
         .field(
@@ -32,7 +32,7 @@ struct vec2
     [[no_unique_address]] T x;
     [[no_unique_address]] T y;
 
-    friend consteval auto reflect(std::in_place_type_t<vec2<T>>) noexcept
+    friend STARE_CONSTEVAL auto reflect(std::in_place_type_t<vec2<T>>) noexcept
     {
         return stare::make_reflection_for<vec2<T>>()
             .field(std::in_place_type<T>,
@@ -51,7 +51,7 @@ struct vec2
 
 struct color : vec3<uint8_t>
 {
-    friend consteval auto reflect(std::in_place_type_t<color>) noexcept
+    friend STARE_CONSTEVAL auto reflect(std::in_place_type_t<color>) noexcept
     {
         return stare::make_reflection_for<color>()
             .template base<vec3<uint8_t>>()

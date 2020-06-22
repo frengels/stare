@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "stare/base.hpp"
+#include "stare/concepts.hpp"
 #include "stare/field.hpp"
 #include "stare/nameof.hpp"
 
@@ -126,13 +127,12 @@ public:
     {}
 
 public:
-    reflection_builder() = default;
+    constexpr reflection_builder() = default;
 
     template<typename U, typename... Args>
     constexpr auto field(std::in_place_type_t<U>, Args&&... args) && noexcept
-        requires(
-            std::is_standard_layout_v<T>&&
-                std::constructible_from<stare::standard_field<T, U>, Args&&...>)
+        requires(std::is_standard_layout_v<T>&& stare::detail::
+                     constructible_from<stare::standard_field<T, U>, Args&&...>)
     {
         return reflection_builder<
             T,
@@ -153,7 +153,8 @@ public:
     constexpr auto field(std::in_place_type_t<U>, Args&&... args) && noexcept
         requires(
             !std::is_standard_layout_v<T> &&
-            std::constructible_from<stare::nonstandard_field<T, U>, Args&&...>)
+            stare::detail::constructible_from<stare::nonstandard_field<T, U>,
+                                              Args&&...>)
     {
         return reflection_builder<
             T,
