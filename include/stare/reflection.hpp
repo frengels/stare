@@ -127,7 +127,7 @@ public:
     {}
 
 public:
-    constexpr reflection_builder() = default;
+    reflection_builder() = default;
 
     template<typename U, typename... Args>
     constexpr auto field(std::in_place_type_t<U>, Args&&... args) && noexcept
