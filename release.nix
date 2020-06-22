@@ -2,13 +2,6 @@
 let
     pkgs = import nixpkgs { };
 
-    pkgs-android = import nixpkgs {
-        crossSystem = (import <nixpkgs/lib>).systems.examples.aarch64-android-prebuilt;
-        config = {
-            allowUnsupportedSystem = true;
-        };
-    };
-
     jobs = rec {
         nix = pkgs.callPackage ./derivation.nix { };
         nix-gcc9 = pkgs.callPackage ./derivation.nix { stdenv = pkgs.gcc9Stdenv; };
