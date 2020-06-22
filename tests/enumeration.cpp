@@ -30,9 +30,6 @@ TEST_CASE("enum")
                       "no_namespace::entry1");
         static_assert(stare::nameof_enum_entry<myns::namespaced::entry1>() ==
                       "myns::namespaced::entry1");
-
-        // inspect with string to make sure the string has been shortened
-        std::puts(stare::nameof_enum_entry<myns::namespaced::entry1>().data());
     }
 
     SUBCASE("is_entry")
@@ -50,9 +47,11 @@ TEST_CASE("enum")
     {
         constexpr auto refl = stare::reflect_enum<no_namespace>();
 
-        REQUIRE(refl.entries().size() == 2);
+        REQUIRE(
+            std::tuple_size_v<std::remove_cvref_t<decltype(refl.entries())>> ==
+            2);
 
-        REQUIRE(refl.entries()[0].value == no_namespace::entry1);
-        REQUIRE(refl.entries()[1].value == no_namespace::entry2);
+        REQUIRE(std::get<0>(refl.entries()).value() == no_namespace::entry1);
+        REQUIRE(std::get<1>(refl.entries()).value() == no_namespace::entry2);
     }
 }

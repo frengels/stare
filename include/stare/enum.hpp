@@ -16,11 +16,18 @@ struct enum_range
     static constexpr int max = 128;
 };
 
-template<stare::enumeral E>
-struct enum_entry
+template<auto Val>
+requires(stare::enumeral<decltype(Val)>) struct enum_entry
 {
-    E                value;
-    std::string_view name;
+    static constexpr auto value() noexcept
+    {
+        return Val;
+    }
+
+    static constexpr std::string_view name() noexcept
+    {
+        return stare::nameof_enum_entry<Val>();
+    }
 };
 
 /// Obviously inspired by Neargye's magic_enum
@@ -80,39 +87,46 @@ private:
         return count;
     }();
 
-    static constexpr std::array<enum_entry<E>, valid_entries_count> entries_ =
-        [] {
-            auto                                           enum_value = min;
-            std::array<enum_entry<E>, valid_entries_count> entries{};
-            std::size_t                                    arr_index = 0;
+    static constexpr std::array<E, valid_entries_count> entries_ = [] {
+        auto                               enum_value = min;
+        std::array<E, valid_entries_count> entries{};
+        std::size_t                        arr_index = 0;
 
-            for (std::string_view name : all_entries)
+        for (std::string_view name : all_entries)
+        {
+            if (stare::detail::is_enum_entry(name))
             {
-                if (stare::detail::is_enum_entry(name))
-                {
-                    entries[arr_index] = {.value = static_cast<E>(enum_value),
-                                          .name  = name};
-                    ++arr_index;
-                }
-
-                ++enum_value;
+                entries[arr_index] = static_cast<E>(enum_value);
+                ++arr_index;
             }
 
-            return entries;
-        }();
+            ++enum_value;
+        }
+
+        return entries;
+    }();
+
+    template<std::size_t... Is>
+    static constexpr auto
+        tuple_entries_impl(std::index_sequence<Is...>) noexcept
+    {
+        return std::make_tuple(enum_entry<std::get<Is>(entries_)>{}...);
+    }
+
+    static constexpr auto tuple_entries =
+        tuple_entries_impl(std::make_index_sequence<entries_.size()>{});
 
 public:
     magic_enum_reflection() = default;
 
-    constexpr std::string_view name() const noexcept
+    static constexpr std::string_view name() noexcept
     {
         return stare::nameof_type<E>();
     }
 
-    constexpr const std::array<enum_entry<E>, valid_entries_count>&
-    entries() const noexcept
+    static constexpr const auto& entries() noexcept
     {
-        return entries_;
+        return tuple_entries;
     }
 }; // namespace stare
 
