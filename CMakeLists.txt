@@ -24,6 +24,12 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 target_compile_features(stare INTERFACE cxx_std_20)
+if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0")
+        message(FATAL_ERROR "Does not currently support compilers under gcc10")
+        target_compile_options(stare INTERFACE -fconcepts)
+    endif()
+endif()
 
 write_basic_package_version_file(
     stareConfigVersion.cmake
