@@ -4,6 +4,8 @@ let
 
     jobs = rec {
         nix = pkgs.callPackage ./derivation.nix { };
+        # gcc8 is not supported because it does not properly display automatically reflected enum entries
+        # this could be solved by simply turning off automatic reflection of enums
         nix-gcc9 = pkgs.callPackage ./derivation.nix { stdenv = pkgs.gcc9Stdenv; };
         nix-gcc10 = pkgs.callPackage ./derivation.nix { stdenv = pkgs.gcc10Stdenv; };
 
