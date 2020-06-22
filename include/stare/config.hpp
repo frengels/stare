@@ -5,3 +5,9 @@
 #else
 #define STARE_CONSTEVAL constexpr
 #endif
+
+#ifndef __clang__ // not in clang
+#ifdef defined(__GNUC__) && __GNUC__ < 10
+#define STARE_GCC9_WORKAROUND
+#endif
+#endif

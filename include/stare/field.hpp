@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "stare/concepts.hpp"
+#include "stare/config.hpp"
 
 namespace stare
 {
@@ -114,12 +115,12 @@ private:
 public:
     template<typename... FieldUs>
     constexpr fields_of(FieldUs&&... fields) noexcept
-#ifndef STARE_GCC9 // workaround for gcc9
+#ifndef STARE_GCC9_WORKAROUND
         requires((stare::detail::constructible_from<FieldTs, FieldUs&&> && ...))
 #endif
         : fields_(static_cast<FieldUs&&>(fields)...)
     {
-#ifdef STARE_GCC9
+#ifdef STARE_GCC9_WORKAROUND
         static_assert(
             (stare::detail::constructible_from<FieldTs, FieldUs&&> && ...));
 #endif

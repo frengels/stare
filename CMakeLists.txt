@@ -24,20 +24,11 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 target_compile_features(stare INTERFACE cxx_std_20)
-if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0")
-        if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.1.0")
-            message(FATAL_ERROR "GCC versions under 9.1.0 are not supported")
-        else ()
-            target_compile_options(stare INTERFACE -fconcepts)
-            target_compile_definitions(stare INTERFACE STARE_GCC9)
-        endif ()
-    endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0")
-        message(FATAL_ERROR "Clang version under 10.0.0 are not supported")
-    endif ()
-endif()
+
+target_compile_options(stare INTERFACE 
+    $<$<CXX_COMPILER_ID:GNU>:
+        $<$<VERSION_LESS:CXX_COMPILER_VERSION,9.1.0>:
+            -fconcepts>>)
 
 write_basic_package_version_file(
     stareConfigVersion.cmake
