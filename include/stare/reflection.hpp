@@ -116,8 +116,8 @@ public:
     using reflected_type = T;
 
 private:
-    [[no_unique_address]] bases_of<T, Bases...>   bases_;
-    [[no_unique_address]] fields_of<T, Fields...> fields_;
+    [[no_unique_address]] bases_of<T, Bases...>   bases_{};
+    [[no_unique_address]] fields_of<T, Fields...> fields_{};
 
 public:
     constexpr reflection_builder(std::in_place_type_t<reflected_type>,
